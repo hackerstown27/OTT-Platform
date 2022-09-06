@@ -6,9 +6,11 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import Icon from "../assets/icons/netflix.png";
 import AppState from "../Context/AppState";
+import axios from "../axios/axios";
 
 class Login extends React.Component {
   constructor(props) {
@@ -18,6 +20,10 @@ class Login extends React.Component {
       password: "",
       isEmailValid: false,
       isPasswordValid: false,
+      alert: {
+        show: false,
+        msg: "",
+      },
     };
   }
 
@@ -41,12 +47,51 @@ class Login extends React.Component {
   };
 
   onLoginHandler = () => {
-    this.context.updateUserToken("not null");
+    // this.context.updateUserToken("not null");
+    axios
+      .post("/auth/login", {
+        email: this.state.email,
+        password: this.state.password,
+      })
+      .then((res) => {
+        this.context.updateUserToken(res.headers["x-auth-token"]);
+      })
+      .catch((err) => {
+        this.setState({
+          ...this.state,
+          alert: {
+            show: true,
+            msg: err.response.data,
+          },
+        });
+      });
   };
 
   render() {
+    const ShowAlert = (msg) =>
+      Alert.alert("Authentication Failed", msg, [
+        {
+          text: "OK",
+          onPress: () => {
+            this.setState({
+              email: "",
+              password: "",
+              confirmPassword: "",
+              isEmailValid: false,
+              isPasswordValid: false,
+              isConfirmPasswordValid: false,
+              alert: {
+                show: false,
+                msg: "",
+              },
+            });
+          },
+        },
+      ]);
+
     return (
       <View style={styles.container}>
+        {this.state.alert.show && ShowAlert(this.state.alert.msg)}
         <Image style={styles.logo} source={Icon} />
         <TextInput
           style={
