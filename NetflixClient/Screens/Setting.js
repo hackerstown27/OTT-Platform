@@ -5,8 +5,10 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import AppState from "../Context/AppState";
+import axios from "../axios/axios";
 
 class Setting extends React.Component {
   constructor(props) {
@@ -16,7 +18,16 @@ class Setting extends React.Component {
       confirmPassword: "",
       isPasswordValid: false,
       isConfirmPasswordValid: false,
+      alert: {
+        show: false,
+        title: "",
+        msg: "",
+      },
     };
+  }
+
+  componentDidMount() {
+    axios.defaults.headers.common["Authorization"] = this.context.userToken;
   }
 
   onChangePasswordHandler = (input) => {
@@ -37,13 +48,91 @@ class Setting extends React.Component {
     });
   };
 
+  onClickChangePasswordHandler = () => {
+    axios
+      .post("/user/changePassword", {
+        password: this.state.password,
+      })
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          alert: {
+            show: true,
+            title: "Password Changed Successfully",
+            msg: "Your Password is now changed.",
+          },
+        });
+      })
+      .catch((err) => {
+        this.setState({
+          ...this.state,
+          alert: {
+            show: true,
+            title: "Something Went Wrong!",
+            msg: "Please Try Again",
+          },
+        });
+      });
+  };
+
   onLogoutHandler = () => {
     this.context.updateUserToken(null);
   };
 
+  onDeleteAccountHandler = () => {
+    axios
+      .delete("/user/deleteUser")
+      .then((res) => {
+        this.onLogoutHandler();
+      })
+      .catch((err) => {
+        this.setState({
+          ...this.state,
+          alert: {
+            show: true,
+            title: "Something Went Wrong!",
+            msg: "Please Try Again",
+          },
+        });
+      });
+  };
+
   render() {
+    const ShowAlert = (title, msg) =>
+      Alert.alert(title, msg, [
+        {
+          text: "OK",
+          onPress: () => {
+            this.setState({
+              password: "",
+              confirmPassword: "",
+              isPasswordValid: false,
+              isConfirmPasswordValid: false,
+              alert: {
+                show: false,
+                title: "",
+                msg: "",
+              },
+            });
+          },
+        },
+      ]);
+
+    const ShowConfirmation = (title, msg) =>
+      Alert.alert(title, msg, [
+        {
+          text: "Yes",
+          onPress: this.onDeleteAccountHandler,
+        },
+        {
+          text: "No",
+        }
+      ]);
+
     return (
       <View style={styles.container}>
+        {this.state.alert.show &&
+          ShowAlert(this.state.alert.title, this.state.alert.msg)}
         <View style={styles.section}>
           <Text style={styles.heading}>Change Password</Text>
           <TextInput
@@ -73,6 +162,7 @@ class Setting extends React.Component {
             disabled={
               !(this.state.isPasswordValid && this.state.isConfirmPasswordValid)
             }
+            onPress={this.onClickChangePasswordHandler}
           >
             <Text style={styles.btnText}>Change Password</Text>
           </TouchableOpacity>
@@ -82,7 +172,7 @@ class Setting extends React.Component {
           <Text style={styles.label}>
             Your Account will be permanently deleted!
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => ShowConfirmation("Delete Account", "Are you Sure?")}>
             <Text style={styles.btnText}>Delete Account</Text>
           </TouchableOpacity>
         </View>
