@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert
 } from "react-native";
-import Icon from "../assets/icons/netflix.png";
+import Icon from "../assets/icons/Streamingo.png";
 import AppState from "../Context/AppState";
 import axios from "../axios/axios";
 
@@ -156,7 +156,7 @@ class Register extends React.Component {
           style={styles.label}
           onPress={() => this.props.navigation.navigate("Login")}
         >
-          Already on Netflix? Sign in now
+          Already on Streamingo? Sign in now
         </Text>
       </View>
     );
@@ -172,12 +172,12 @@ const styles = StyleSheet.create({
     padding: 25,
   },
   logo: {
-    width: 200,
-    height: 80,
+    width: 500,
+    height: 100,
   },
   label: {
     alignSelf: "stretch",
-    fontSize: 20,
+    fontSize: 17,
     color: "white",
     fontFamily: "Poppins-Light",
     alignSelf: "center",
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: "stretch",
-    backgroundColor: "#E50914",
+    backgroundColor: "#8758FF",
     padding: 10,
     marginTop: 20,
     borderRadius: 5,

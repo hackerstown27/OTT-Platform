@@ -4,151 +4,69 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  ScrollView,
   FlatList,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
+  Dimensions,
+  Alert,
 } from "react-native";
+import AppState from "../Context/AppState";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "../axios/axios";
+import config from "../env";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      movies: {
-        "Continue Watching": [
-          {
-            img: "https://image.tmdb.org/t/p/original/n9dwu1p5G4qJ4DI5eHJMUbAdOfA.jpg",
-            name: "Inception",
-            watching: true,
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_Ratio0.7015_AL_.jpg",
-            name: "Inception",
-            watching: true,
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-            watching: true,
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMWU4N2FjNzYtNTVkNC00NzQ0LTg0MjAtYTJlMjFhNGUxZDFmXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-            watching: true,
-          },
-        ],
-        "Trending Now": [
-          {
-            img: "https://imdb-api.com/images/original/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BNzA5ZDNlZWMtM2NhNS00NDJjLTk4NDItYTRmY2EwMWZlMTY3XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BNjJlYmNkZGItM2NhYy00MjlmLTk5NmQtNjg1NmM2ODU4OTMwXkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-        "Sci-Fi & Fantasy": [
-          {
-            img: "https://imdb-api.com/images/original/MV5BMDdmMTBiNTYtMDIzNi00NGVlLWIzMDYtZTk3MTQ3NGQxZGEwXkEyXkFqcGdeQXVyMzMwOTU5MDk@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BNTE1M2NjNDgtYjQ2Ny00YTMzLWJiYWQtMTdmM2Q2YjA1MDg1XkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMTJiMmE5YWItOWZjYS00YTg0LWE0MTYtMzg2ZTY4YjNkNDEzXkEyXkFqcGdeQXVyMTAzMDg4NzU0._V1_Ratio0.7910_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BOWM0YWMwMDQtMjE5NS00ZTIwLWE1NWEtODViMWZjMWI2OTU3XkEyXkFqcGdeQXVyMTEyMjM2NDc2._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-        "Crime Thrillers": [
-          {
-            img: "https://imdb-api.com/images/original/MV5BZjlhNzM4NjItMWRkNi00MWRmLWIzZmEtMmVlNGMwNzU3MmUzXkEyXkFqcGdeQXVyMTAyMjQ3NzQ1._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BZWMyYzFjYTYtNTRjYi00OGExLWE2YzgtOGRmYjAxZTU3NzBiXkEyXkFqcGdeQXVyMzQ0MzA0NTM@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BZjMzZmIyNjUtNWE3Zi00NjIyLWIyZTUtYzhmY2NlNWU3NTU3XkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMTJmNGJmYTgtYjAxNy00YmMzLTk2YTYtMGIzMmUwNDMyMTY1XkEyXkFqcGdeQXVyMTEyMjM2NDc2._V1_Ratio0.7910_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-        Drama: [
-          {
-            img: "https://imdb-api.com/images/original/MV5BMmIwYzFhODAtY2I1YS00ZDdmLTkyYWQtZjI5NDIwMDc2MjEyXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BZTgxMGQ2ZDctYWY4Yy00YTI4LWIxMmYtOWViMGI5ZDIwMmFiXkEyXkFqcGdeQXVyMTAyMjQ3NzQ1._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BOTI4NDhhNGEtZjQxZC00ZTRmLThmZTctOGJmY2ZlOTc0ZGY0XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BYjkwMzIxYzMtOTVkMS00NDQxLThkMjItNzgxN2RiNjdlNTliXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-        Comedy: [
-          {
-            img: "https://image.tmdb.org/t/p/original/n9dwu1p5G4qJ4DI5eHJMUbAdOfA.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_Ratio0.7015_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMWU4N2FjNzYtNTVkNC00NzQ0LTg0MjAtYTJlMjFhNGUxZDFmXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-        Documentries: [
-          {
-            img: "https://image.tmdb.org/t/p/original/n9dwu1p5G4qJ4DI5eHJMUbAdOfA.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_Ratio0.7015_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-          {
-            img: "https://imdb-api.com/images/original/MV5BMWU4N2FjNzYtNTVkNC00NzQ0LTg0MjAtYTJlMjFhNGUxZDFmXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_Ratio0.6716_AL_.jpg",
-            name: "Inception",
-          },
-        ],
-      },
+      courses: {},
+      loading: true,
+      query: "",
     };
   }
+
+  componentDidMount() {
+    axios.defaults.headers.common["Authorization"] = this.context.userToken;
+    axios
+      .get("/course/courses")
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          courses: res.data,
+          loading: false,
+        });
+      })
+      .catch((err) => {
+        this.showAlert();
+      });
+  }
+  showAlert = () => {
+    Alert.alert("Something Went Wrong", "Please Try Again!", [
+      { text: "OK", onPress: () => {} },
+    ]);
+  };
+
+  onSearchHandler = (query) => {
+    this.setState({
+      ...this.state,
+      loading: true,
+      query: query,
+    });
+    axios
+      .get("/course/courses/"+query)
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          courses: res.data,
+          loading: false,
+        });
+      })
+      .catch((err) => {
+        this.showAlert();
+      });
+  };
+
   render() {
     let renderMovie = ({ item }) => {
       return (
@@ -161,7 +79,12 @@ class Home extends React.Component {
               color="white"
             />
           )}
-          <Image style={styles.thumb} source={{ uri: item.img }} />
+          <Image
+            style={styles.thumb}
+            source={{
+              uri: config.SERVER_URL + "courseThumbnails/" + item.thumbnail,
+            }}
+          />
         </TouchableOpacity>
       );
     };
@@ -171,9 +94,9 @@ class Home extends React.Component {
           <Text style={styles.sectionHeading}>{item}</Text>
           <FlatList
             horizontal
-            data={this.state.movies[item]}
+            data={this.state.courses[item]}
             renderItem={renderMovie}
-            keyExtractor={i => i.img}
+            keyExtractor={(i) => i.name}
           />
         </View>
       );
@@ -181,16 +104,25 @@ class Home extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.search}>
-          <Ionicons name="search" size={30} color="red" />
+          <Ionicons name="search" size={30} color="#8758FF" />
           <TextInput
+            onChangeText={this.onSearchHandler}
+            value={this.state.query}    
             style={styles.searchInput}
             placeholder="Search for Movie"
           />
         </View>
+        {this.state.loading && (
+          <ActivityIndicator
+            style={styles.loader}
+            size="large"
+            color="#8758FF"
+          />
+        )}
         <FlatList
-          data={Object.keys(this.state.movies)}
+          data={Object.keys(this.state.courses)}
           renderItem={renderSection}
-          keyExtractor={i => i}
+          keyExtractor={(i) => i}
         />
       </View>
     );
@@ -198,6 +130,14 @@ class Home extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  loader: {
+    zIndex: 10,
+    elevation: 10,
+    alignItems: "center",
+    position: "absolute",
+    top: Dimensions.get("window").height / 2.25,
+    left: Dimensions.get("window").width / 2.25,
+  },
   play: {
     position: "absolute",
     zIndex: 10,
@@ -214,7 +154,7 @@ const styles = StyleSheet.create({
   },
   thumb: {
     height: 175,
-    width: 125,
+    width: 300,
     resizeMode: "stretch",
     borderRadius: 10,
   },
@@ -248,4 +188,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
+Home.contextType = AppState;
 export default Home;
