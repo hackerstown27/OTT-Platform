@@ -11,6 +11,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
+import VideoPlayer from "../Component/VideoPlayer";
 import AppState from "../Context/AppState";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "../axios/axios";
@@ -23,10 +24,13 @@ class Home extends React.Component {
       courses: {},
       loading: true,
       query: "",
+      videoSrc: null,
+      isRefreshing: false,
+      currCourseId: null,
     };
   }
 
-  componentDidMount() {
+  initialization() {
     axios.defaults.headers.common["Authorization"] = this.context.userToken;
     axios
       .get("/course/courses")
@@ -41,6 +45,10 @@ class Home extends React.Component {
         this.showAlert();
       });
   }
+
+  componentDidMount() {
+    this.initialization();
+  }
   showAlert = () => {
     Alert.alert("Something Went Wrong", "Please Try Again!", [
       { text: "OK", onPress: () => {} },
@@ -54,7 +62,7 @@ class Home extends React.Component {
       query: query,
     });
     axios
-      .get("/course/courses/"+query)
+      .get("/course/courses/" + query)
       .then((res) => {
         this.setState({
           ...this.state,
@@ -67,18 +75,62 @@ class Home extends React.Component {
       });
   };
 
+  addToWatchHandler = (id) => {
+    axios.post("/course/courses/watch", { id: id });
+  };
+
+  removeFromWatchHandler = (id) => {
+    axios.delete("/course/courses/watch/" + id);
+  };
+
+  addBookmarkHandler = (id) => {
+    axios.post("/course/courses/bookmark", { id: id });
+    Alert.alert("Bookmark Added", "Course Added To Your WishList", [
+      { text: "OK", onPress: () => {} },
+    ]);
+  };
+
+  refreshHandler = () => {
+    this.setState({
+      ...this.state,
+      isRefreshing: true,
+    });
+    this.initialization();
+    this.setState({
+      ...this.state,
+      isRefreshing: false,
+    });
+  };
+
   render() {
     let renderMovie = ({ item }) => {
       return (
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => {
+            this.setState({
+              ...this.state,
+              videoSrc: item.videoSrc,
+              currCourseId: item._id,
+            });
+            this.addToWatchHandler(item._id);
+          }}
+        >
           {item.watching && (
             <Ionicons
               style={styles.play}
               name="play-circle-outline"
-              size={70}
+              size={100}
               color="white"
             />
           )}
+          <TouchableOpacity
+            style={styles.bookmark}
+            onPress={() => this.addBookmarkHandler(item._id)}
+          >
+            <Ionicons name="bookmarks" size={20} color="white" />
+          </TouchableOpacity>
+
           <Image
             style={styles.thumb}
             source={{
@@ -89,17 +141,18 @@ class Home extends React.Component {
       );
     };
     let renderSection = ({ item }) => {
-      return (
-        <View style={styles.section}>
-          <Text style={styles.sectionHeading}>{item}</Text>
-          <FlatList
-            horizontal
-            data={this.state.courses[item]}
-            renderItem={renderMovie}
-            keyExtractor={(i) => i.name}
-          />
-        </View>
-      );
+      if (this.state.courses[item].length != 0)
+        return (
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>{item}</Text>
+            <FlatList
+              horizontal
+              data={this.state.courses[item]}
+              renderItem={renderMovie}
+              keyExtractor={(i) => i.name}
+            />
+          </View>
+        );
     };
     return (
       <View style={styles.container}>
@@ -107,11 +160,26 @@ class Home extends React.Component {
           <Ionicons name="search" size={30} color="#8758FF" />
           <TextInput
             onChangeText={this.onSearchHandler}
-            value={this.state.query}    
+            value={this.state.query}
             style={styles.searchInput}
-            placeholder="Search for Movie"
+            placeholder="Search for Course"
           />
         </View>
+        {this.state.videoSrc != null && (
+          <VideoPlayer
+            src={this.state.videoSrc}
+            onDismiss={() => {
+              this.setState({
+                ...this.state,
+                videoSrc: null,
+                currCourseId: null,
+              });
+            }}
+            onRemoveFromWatch={() =>
+              this.removeFromWatchHandler(this.state.currCourseId)
+            }
+          />
+        )}
         {this.state.loading && (
           <ActivityIndicator
             style={styles.loader}
@@ -123,6 +191,8 @@ class Home extends React.Component {
           data={Object.keys(this.state.courses)}
           renderItem={renderSection}
           keyExtractor={(i) => i}
+          refreshing={this.state.isRefreshing}
+          onRefresh={() => this.refreshHandler()}
         />
       </View>
     );
@@ -142,7 +212,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
     top: 40,
-    left: 30,
+    left: 100,
   },
   container: {
     margin: 2,
@@ -186,6 +256,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontFamily: "Poppins-Bold",
     fontSize: 20,
+  },
+  bookmark: {
+    position: "absolute",
+    zIndex: 10,
+    top: 10,
+    right: 10,
+    backgroundColor: "#6B728E",
+    padding: 10,
+    borderRadius: 10,
   },
 });
 Home.contextType = AppState;

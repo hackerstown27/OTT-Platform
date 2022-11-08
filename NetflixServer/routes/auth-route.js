@@ -12,7 +12,12 @@ router.post("/register", async (req, res) => {
   }
   req.body.password = await bcrypt.hash(req.body.password, 10);
 
-  let user = new User({ email: req.body.email, password: req.body.password });
+  let user = new User({
+    email: req.body.email,
+    password: req.body.password,
+    watchList: {},
+    wishList: {},
+  });
   await user.save();
 
   const token = jwt.sign({ token_id: user._id }, process.env.JWT_PVT_KEY);
