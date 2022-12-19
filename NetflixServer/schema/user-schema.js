@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
     type: Map,
     of: Boolean,
   },
+  historyList: {
+    type: Map,
+    of: Boolean,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

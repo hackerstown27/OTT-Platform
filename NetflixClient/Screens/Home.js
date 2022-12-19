@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import VideoPlayer from "../Component/VideoPlayer";
 import AppState from "../Context/AppState";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons} from "@expo/vector-icons";
 import axios from "../axios/axios";
 import config from "../env";
+
 
 class Home extends React.Component {
   constructor(props) {
@@ -88,6 +89,14 @@ class Home extends React.Component {
     Alert.alert("Bookmark Added", "Course Added To Your WishList", [
       { text: "OK", onPress: () => {} },
     ]);
+    
+  };
+
+  removeBookmarkHandler = (id) => {
+    axios.delete("/course/courses/bookmark/" + id);
+    Alert.alert("Bookmark Removed", "Course Removed From Your WishList", [
+      { text: "OK", onPress: () => {} },
+    ]);
   };
 
   refreshHandler = () => {
@@ -124,13 +133,21 @@ class Home extends React.Component {
               color="white"
             />
           )}
-          <TouchableOpacity
-            style={styles.bookmark}
-            onPress={() => this.addBookmarkHandler(item._id)}
-          >
-            <Ionicons name="bookmarks" size={20} color="white" />
-          </TouchableOpacity>
-
+          {item.marked ? (
+            <TouchableOpacity
+              style={styles.bookmark}
+              onPress={() => this.removeBookmarkHandler(item._id)}
+            >
+              <MaterialIcons name="delete" size={24} color="white" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.bookmark}
+              onPress={() => this.addBookmarkHandler(item._id)}
+            >
+              <Ionicons name="bookmarks" size={20} color="white" />
+            </TouchableOpacity>
+          )}
           <Image
             style={styles.thumb}
             source={{

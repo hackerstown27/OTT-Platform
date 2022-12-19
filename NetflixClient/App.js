@@ -7,9 +7,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AppState from "./Context/AppState";
 import Home from "./Screens/Home";
-import MyList from "./Screens/MyList";
 import Setting from "./Screens/Setting";
 import { Ionicons } from "@expo/vector-icons";
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -21,7 +21,7 @@ class App extends React.Component {
     };
     this.state = {
       fontsLoaded: false,
-      userToken: null,
+      userToken: "null",
       updateUserToken: this.handleUserToken,
     };
   }
@@ -37,6 +37,8 @@ class App extends React.Component {
   componentDidMount() {
     this.loadFonts();
   }
+
+  
 
   render() {
     let loginNav = (
@@ -74,7 +76,6 @@ class App extends React.Component {
           })}
         >
           <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="My List" component={MyList} />
           <Tab.Screen name="Settings" component={Setting} />
         </Tab.Navigator>
       </NavigationContainer>

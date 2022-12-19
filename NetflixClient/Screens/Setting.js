@@ -9,6 +9,12 @@ import {
 } from "react-native";
 import AppState from "../Context/AppState";
 import axios from "../axios/axios";
+import {
+  Notification,
+  schedulePushNotification,
+} from "../Component/Notification";
+
+import { Picker } from "@react-native-picker/picker";
 
 class Setting extends React.Component {
   constructor(props) {
@@ -23,6 +29,9 @@ class Setting extends React.Component {
         title: "",
         msg: "",
       },
+      timeKey: "minute",
+      timeValue: 0,
+      notifyId: null,
     };
   }
 
@@ -97,6 +106,20 @@ class Setting extends React.Component {
       });
   };
 
+  onChangeTimeValueHandler = (input) => {
+    this.setState({
+      ...this.state,
+      timeValue: input,
+    });
+  };
+
+  onChangeTimeKeyHandler = (input) => {
+    this.setState({
+      ...this.state,
+      timeKey: input,
+    });
+  };
+
   render() {
     const ShowAlert = (title, msg) =>
       Alert.alert(title, msg, [
@@ -126,11 +149,12 @@ class Setting extends React.Component {
         },
         {
           text: "No",
-        }
+        },
       ]);
 
     return (
       <View style={styles.container}>
+        <Notification />
         {this.state.alert.show &&
           ShowAlert(this.state.alert.title, this.state.alert.msg)}
         <View style={styles.section}>
@@ -168,11 +192,75 @@ class Setting extends React.Component {
           </TouchableOpacity>
         </View>
         <View style={styles.section}>
+          <Text style={styles.heading}>Schedule Notifications</Text>
+          <Text style={styles.label}>
+            Select the Schedule for Reminders, To Keep you on Track.
+          </Text>
+          <View style={styles.scheduleSelector}>
+            <View
+              style={{
+                borderRadius: 5,
+                backgroundColor: "white",
+                height: 50,
+                width: 75,
+              }}
+            >
+              <Text style={styles.scheduleLabel}>Every</Text>
+            </View>
+            <TextInput
+              style={styles.scheduleInput}
+              keyboardType="number-pad"
+              onChangeText={this.onChangeTimeValueHandler}
+              value={this.state.timeValue}
+            />
+            <Picker
+              selectedValue={this.state.timeKey}
+              itemStyle={{
+                backgroundColor: "white",
+                color: "black",
+                borderColor: "rgba(0,0,0,0.2)",
+                fontSize: 16,
+                height: 50,
+                width: 130,
+                borderRadius: 10,
+              }}
+              mode="dropdown"
+              onValueChange={(itemValue, itemIndex) =>
+                this.onChangeTimeKeyHandler(itemValue)
+              }
+            >
+              <Picker.Item label="Minuntes" value="minute" />
+              <Picker.Item label="Hours" value="hour" />
+              <Picker.Item label="Days" value="day" />
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={async () => {
+              let id = await schedulePushNotification(
+                this.state.timeKey,
+                this.state.timeValue,
+                this.state.notifyId
+              );
+              this.setState({
+                ...this.state,
+                notifyId: id,
+              });
+            }}
+          >
+            <Text style={styles.btnText}>Set Reminder</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.section}>
           <Text style={styles.heading}>Deactivate Account</Text>
           <Text style={styles.label}>
             Your Account will be permanently deleted!
           </Text>
-          <TouchableOpacity style={styles.button} onPress={() => ShowConfirmation("Delete Account", "Are you Sure?")}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => ShowConfirmation("Delete Account", "Are you Sure?")}
+          >
             <Text style={styles.btnText}>Delete Account</Text>
           </TouchableOpacity>
         </View>
@@ -243,6 +331,27 @@ const styles = StyleSheet.create({
     color: "#E50914",
     borderColor: "#E50914",
     borderWidth: 1,
+  },
+  scheduleSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 10,
+  },
+  scheduleLabel: {
+    fontFamily: "Poppins-Light",
+    padding: 10,
+    margin: 3,
+    fontSize: 18,
+  },
+  scheduleInput: {
+    fontFamily: "Poppins-Light",
+    fontSize: 18,
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    flex: 1,
+    backgroundColor: "white",
+    color: "black",
   },
 });
 
