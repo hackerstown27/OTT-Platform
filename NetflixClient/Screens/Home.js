@@ -13,10 +13,10 @@ import {
 } from "react-native";
 import VideoPlayer from "../Component/VideoPlayer";
 import AppState from "../Context/AppState";
-import { Ionicons, MaterialIcons} from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import axios from "../axios/axios";
 import config from "../env";
-
+import { AirbnbRating } from "react-native-ratings";
 
 class Home extends React.Component {
   constructor(props) {
@@ -28,6 +28,7 @@ class Home extends React.Component {
       videoSrc: null,
       isRefreshing: false,
       currCourseId: null,
+      showRating: false,
     };
   }
 
@@ -89,7 +90,6 @@ class Home extends React.Component {
     Alert.alert("Bookmark Added", "Course Added To Your WishList", [
       { text: "OK", onPress: () => {} },
     ]);
-    
   };
 
   removeBookmarkHandler = (id) => {
@@ -121,6 +121,7 @@ class Home extends React.Component {
               ...this.state,
               videoSrc: item.videoSrc,
               currCourseId: item._id,
+              showRating: false,
             });
             this.addToWatchHandler(item._id);
           }}
@@ -182,6 +183,7 @@ class Home extends React.Component {
             placeholder="Search for Course"
           />
         </View>
+
         {this.state.videoSrc != null && (
           <VideoPlayer
             src={this.state.videoSrc}
@@ -190,11 +192,30 @@ class Home extends React.Component {
                 ...this.state,
                 videoSrc: null,
                 currCourseId: null,
+                showRating: false,
               });
             }}
-            onRemoveFromWatch={() =>
-              this.removeFromWatchHandler(this.state.currCourseId)
-            }
+            onRemoveFromWatch={() => {
+              this.removeFromWatchHandler(this.state.currCourseId);
+
+              this.setState({
+                ...this.state,
+                showRating: true,
+              });
+            }}
+          />
+        )}
+        {this.state.showRating && (
+          <AirbnbRating
+            count={5}
+            reviews={["Terrible", "Bad", "OK", "Good", "Amazing"]}
+            defaultRating={4}
+            size={30}
+            onFinishRating={(rating) => {
+              axios.delete("/course/courses/watch/" + this.state.currCourseId, {
+                data: { rating: rating },
+              });
+            }}
           />
         )}
         {this.state.loading && (

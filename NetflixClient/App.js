@@ -21,7 +21,7 @@ class App extends React.Component {
     };
     this.state = {
       fontsLoaded: false,
-      userToken: "null",
+      userToken: null,
       updateUserToken: this.handleUserToken,
     };
   }

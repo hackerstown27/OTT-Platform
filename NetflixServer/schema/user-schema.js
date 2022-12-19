@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   },
   historyList: {
     type: Map,
-    of: Boolean,
+    of: Number,
   },
 });
 

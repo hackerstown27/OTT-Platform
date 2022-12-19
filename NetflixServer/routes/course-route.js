@@ -15,7 +15,7 @@ router.post("/courses/watch", async (req, res) => {
 router.delete("/courses/watch/:id", async (req, res) => {
   const user = res.locals.user;
   user.watchList.set(req.params.id, undefined);
-  user.historyList.set(req.params.id, true);
+  user.historyList.set(req.params.id, req.body.rating);
   await user.save();
   return res.status(200);
 });
@@ -44,13 +44,13 @@ router.get("/courses", async (req, res) => {
     watchList.push(watchedCourse);
   }
 
-  const wishList  = [];
+  const wishList = [];
   for (const item in user.wishList.toJSON()) {
     const wishedCourse = await Course.findById(item).lean();
     wishedCourse.marked = true;
     wishList.push(wishedCourse);
   }
-  
+
   output["Continue Watching"] = watchList;
   output["Your WishList"] = wishList;
   const tags = await Course.find().select({ tag: 1 }).distinct("tag");

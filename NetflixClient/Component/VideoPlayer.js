@@ -2,7 +2,6 @@ import React from "react";
 import { Video, AVPlaybackStatus } from "expo-av";
 import { View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "../axios/axios";
 
 export default function VideoPlayer(props) {
   const video = React.useRef(null);
