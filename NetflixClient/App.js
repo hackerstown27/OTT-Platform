@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AppState from "./Context/AppState";
 import Home from "./Screens/Home";
 import Setting from "./Screens/Setting";
+import Chat from "./Screens/Chat";
 import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createStackNavigator();
@@ -62,8 +63,8 @@ class App extends React.Component {
 
               if (route.name === "Home") {
                 iconName = focused ? "home" : "home-outline";
-              } else if (route.name === "My List") {
-                iconName = focused ? "list" : "list-outline";
+              } else if (route.name === "Chat") {
+                iconName = focused ? "chatbox" : "chatbox-outline";
               } else if (route.name === "Settings") {
                 iconName = focused ? "settings" : "settings-outline";
               }
@@ -76,6 +77,7 @@ class App extends React.Component {
           })}
         >
           <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="Chat" component={Chat} />
           <Tab.Screen name="Settings" component={Setting} />
         </Tab.Navigator>
       </NavigationContainer>
