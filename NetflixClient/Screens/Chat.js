@@ -19,9 +19,7 @@ class Chat extends React.Component {
     super(props);
     this.state = {
       chatBoxValue: "",
-      msgs: [
-        { type: "bot", value: "Hello! How may I assist you today?" }
-      ],
+      msgs: [{ type: "bot", value: "Hello! How may I assist you today?" }],
       isLoading: false,
       alert: {
         show: false,
@@ -30,7 +28,7 @@ class Chat extends React.Component {
     };
   }
 
-  onSendHandler = () => {
+  onSendHandler = (promt) => {
     this.setState({
       ...this.state,
       msgs: [
@@ -45,8 +43,8 @@ class Chat extends React.Component {
         "https://api.openai.com/v1/chat/completions",
         {
           model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: this.state.chatBoxValue }],
-          max_tokens: 100
+          messages: [{ role: "user", content: promt }],
+          max_tokens: 100,
         },
         {
           headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}` },
@@ -91,6 +89,9 @@ class Chat extends React.Component {
     );
   };
   render() {
+    const promts = [
+      "Ask me 5 MCQ questions, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
+    ];
     const ShowAlert = (msg) =>
       Alert.alert("ChatGPT Unavailable", msg, [
         {
@@ -115,6 +116,20 @@ class Chat extends React.Component {
             )}
           </ScrollView>
         </View>
+        <View style={styles.bubbles}>
+          <TouchableOpacity
+            style={styles.bubbleBtn}
+            onPress={() => this.onSendHandler(promts[0])}
+          >
+            <Text style={styles.bubbleTxt}>Recommend Career Path!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bubbleBtn}>
+            <Text style={styles.bubbleTxt}>Quiz Me!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bubbleBtn}>
+            <Text style={styles.bubbleTxt}>Ask Doubts?</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.chatBox}>
           <TextInput
             style={styles.input}
@@ -125,7 +140,7 @@ class Chat extends React.Component {
           {!this.state.isLoading ? (
             <TouchableOpacity
               style={styles.button}
-              onPress={this.onSendHandler}
+              onPress={() => this.onSendHandler(this.state.chatBoxValue)}
             >
               <FontAwesome name="send" size={30} color="#8758FF" />
             </TouchableOpacity>
@@ -173,6 +188,14 @@ const styles = StyleSheet.create({
   msgBox: { borderRadius: 5, padding: 10, margin: 5, width: "75%" },
   msgBoxBot: { backgroundColor: "#865DFF" },
   msgBoxUser: { backgroundColor: "#4E6E81", alignSelf: "flex-end" },
+  bubbles: { flexDirection: "row", flexWrap: "wrap" },
+  bubbleBtn: {
+    backgroundColor: "#3C79F5",
+    padding: 5,
+    borderRadius: 5,
+    margin: 5,
+  },
+  bubbleTxt: { fontFamily: "Poppins-Bold", fontSize: 16, color: "white" },
 });
 
 Chat.contextType = AppState;
