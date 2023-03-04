@@ -28,13 +28,10 @@ class Chat extends React.Component {
     };
   }
 
-  onSendHandler = (promt) => {
+  onSendHandler = (promt, msg) => {
     this.setState({
       ...this.state,
-      msgs: [
-        ...this.state.msgs,
-        { type: "user", value: this.state.chatBoxValue },
-      ],
+      msgs: [...this.state.msgs, { type: "user", value: msg }],
       chatBoxValue: "",
       isLoading: true,
     });
@@ -90,7 +87,7 @@ class Chat extends React.Component {
   };
   render() {
     const promts = [
-      "Ask me 5 MCQ questions, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
+      "Ask me 1 MCQ questions, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
     ];
     const ShowAlert = (msg) =>
       Alert.alert("ChatGPT Unavailable", msg, [
@@ -110,7 +107,12 @@ class Chat extends React.Component {
       <View style={styles.container}>
         {this.state.alert.show && ShowAlert(this.state.alert.msg)}
         <View style={styles.chatMsg}>
-          <ScrollView>
+          <ScrollView
+            ref={(ref) => (this.scrollView = ref)}
+            onContentSizeChange={() => {
+              this.scrollView.scrollToEnd({ animated: false });
+            }}
+          >
             {this.state.msgs.map((msg) =>
               this.createMessage(msg.type, msg.value)
             )}
@@ -119,7 +121,9 @@ class Chat extends React.Component {
         <View style={styles.bubbles}>
           <TouchableOpacity
             style={styles.bubbleBtn}
-            onPress={() => this.onSendHandler(promts[0])}
+            onPress={() =>
+              this.onSendHandler(promts[0], "Recommend Career Path!")
+            }
           >
             <Text style={styles.bubbleTxt}>Recommend Career Path!</Text>
           </TouchableOpacity>
@@ -140,7 +144,12 @@ class Chat extends React.Component {
           {!this.state.isLoading ? (
             <TouchableOpacity
               style={styles.button}
-              onPress={() => this.onSendHandler(this.state.chatBoxValue)}
+              onPress={() =>
+                this.onSendHandler(
+                  this.state.chatBoxValue,
+                  this.state.chatBoxValue
+                )
+              }
             >
               <FontAwesome name="send" size={30} color="#8758FF" />
             </TouchableOpacity>
