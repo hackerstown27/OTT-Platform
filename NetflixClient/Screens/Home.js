@@ -152,7 +152,7 @@ class Home extends React.Component {
           <Image
             style={styles.thumb}
             source={{
-              uri: config.SERVER_URL + "courseThumbnails/" + item.thumbnail,
+              uri: item.thumbnail,
             }}
           />
         </TouchableOpacity>

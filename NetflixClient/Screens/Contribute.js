@@ -7,8 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-// import DocumentPicker from 'react-native-document-picker'
-import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from "expo-document-picker";
 import Dropdown from "../Component/Dropdown";
 import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
 import AppState from "../Context/AppState";
@@ -20,6 +19,9 @@ class Contribute extends React.Component {
     this.state = {
       courseName: "",
       courseCategory: "Choose Category",
+      thumbnailInput: null,
+      videoInput: null,
+      isValid: false,
     };
   }
 
@@ -31,19 +33,65 @@ class Contribute extends React.Component {
     this.setState({
       ...this.state,
       courseName: input,
-    });
+    }, this.validate);
   };
 
   courseCategoryHandler = (input) => {
     this.setState({
       ...this.state,
       courseCategory: input,
-    });
+    }, this.validate);
   };
 
   thumbnailHandler = async () => {
-    console.log("hello");
-    DocumentPicker.getDocumentAsync()
+    let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
+    this.setState({
+      ...this.state,
+      thumbnailInput: result,
+    }, this.validate);
+  };
+
+  videoHandler = async () => {
+    let result = await DocumentPicker.getDocumentAsync({ type: "video/*" });
+    this.setState({
+      ...this.state,
+      videoInput: result,
+    }, this.validate);
+  };
+
+  validate = () => {
+    if (
+      this.state.courseName != "" &&
+      this.state.courseCategory != "Choose Category" &&
+      this.state.thumbnailInput != null &&
+      this.state.videoInput != null
+    ) {
+      this.setState({
+        ...this.state,
+        isValid: true,
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        isValid: false,
+      });
+    }
+  };
+
+  onUploadHandler = async () => {
+    const formData = new FormData();
+    formData.append("thumbnail", this.state.thumbnailInput);
+    formData.append("video", this.state.videoInput);
+    formData.append("courseName", this.state.courseName);
+    formData.append("courseCategory", this.state.courseCategory);
+    axios
+      .put("/course/courses/upload", formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   render() {
@@ -69,7 +117,12 @@ class Contribute extends React.Component {
             value={this.state.courseName}
             placeholder="Course Name"
           />
-          <TouchableOpacity style={styles.uploadbutton} onPress={() => {this.thumbnailHandler()}}>
+          <TouchableOpacity
+            style={styles.uploadbutton}
+            onPress={() => {
+              this.thumbnailHandler();
+            }}
+          >
             <EvilIcons
               style={styles.uploadIcon}
               name="image"
@@ -77,8 +130,18 @@ class Contribute extends React.Component {
               color="white"
             />
             <Text style={styles.uploadbtnText}>Choose Thumbnail</Text>
+            {this.state.thumbnailInput != null && (
+              <Text style={styles.fileTag}>
+                File: {this.state.thumbnailInput.name}{" "}
+              </Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.uploadbutton} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.uploadbutton}
+            onPress={() => {
+              this.videoHandler();
+            }}
+          >
             <MaterialCommunityIcons
               style={styles.uploadIcon}
               name="file-video"
@@ -86,8 +149,19 @@ class Contribute extends React.Component {
               color="white"
             />
             <Text style={styles.uploadbtnText}>Choose Video File</Text>
+            {this.state.videoInput != null && (
+              <Text style={styles.fileTag}>
+                File: {this.state.videoInput.name}{" "}
+              </Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {}}>
+          <TouchableOpacity
+            style={this.state.isValid ? styles.button : styles.disbledbutton}
+            onPress={() => {
+              this.onUploadHandler();
+            }}
+            disabled={!this.state.isValid}
+          >
             <Text style={styles.btnText}>Upload Course</Text>
           </TouchableOpacity>
         </View>
@@ -128,6 +202,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 5,
   },
+  disbledbutton: {
+    alignSelf: "stretch",
+    backgroundColor: "#B2A4FF",
+    padding: 10,
+    marginTop: 20,
+    borderRadius: 5,
+  },
   btnText: {
     alignSelf: "center",
     fontSize: 14,
@@ -139,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#BACDDB",
     padding: 10,
     marginTop: 20,
-    height: 100,
+    minheight: 100,
     borderRadius: 5,
   },
   uploadbtnText: {
@@ -162,6 +243,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "white",
     color: "black",
+  },
+  fileTag: {
+    alignSelf: "center",
+    fontSize: 12,
+    color: "#DDFFBB",
+    fontFamily: "Poppins-Bold",
   },
 });
 
