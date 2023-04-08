@@ -9,6 +9,7 @@ import AppState from "./Context/AppState";
 import Home from "./Screens/Home";
 import Setting from "./Screens/Setting";
 import Chat from "./Screens/Chat";
+import Contribute from "./Screens/Contribute";
 import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createStackNavigator();
@@ -39,8 +40,6 @@ class App extends React.Component {
     this.loadFonts();
   }
 
-  
-
   render() {
     let loginNav = (
       <NavigationContainer initialRouteName="Login" theme={DarkTheme}>
@@ -67,6 +66,8 @@ class App extends React.Component {
                 iconName = focused ? "chatbox" : "chatbox-outline";
               } else if (route.name === "Settings") {
                 iconName = focused ? "settings" : "settings-outline";
+              } else if (route.name === "Contribute") {
+                iconName = focused ? "videocam" : "videocam-outline";
               }
 
               return <Ionicons name={iconName} size={size} color={color} />;
@@ -78,6 +79,7 @@ class App extends React.Component {
         >
           <Tab.Screen name="Home" component={Home} />
           <Tab.Screen name="Chat" component={Chat} />
+          <Tab.Screen name="Contribute" component={Contribute} />
           <Tab.Screen name="Settings" component={Setting} />
         </Tab.Navigator>
       </NavigationContainer>

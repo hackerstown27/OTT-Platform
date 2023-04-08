@@ -19,7 +19,7 @@ class Chat extends React.Component {
     super(props);
     this.state = {
       chatBoxValue: "",
-      msgs: [{ type: "bot", value: "Hello! How may I assist you today?" }],
+      msgs: [{ role: "system", content: "Hello! How may I assist you today?" }],
       isLoading: false,
       alert: {
         show: false,
@@ -28,46 +28,57 @@ class Chat extends React.Component {
     };
   }
 
-  onSendHandler = (promt, msg) => {
-    this.setState({
-      ...this.state,
-      msgs: [...this.state.msgs, { type: "user", value: msg }],
-      chatBoxValue: "",
-      isLoading: true,
-    });
-    axios
-      .post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: promt }],
-          max_tokens: 100,
-        },
-        {
-          headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}` },
-        }
-      )
-      .then((res) => {
-        this.setState({
-          ...this.state,
-          isLoading: false,
-          msgs: [
-            ...this.state.msgs,
-            { type: "bot", value: res.data.choices[0].message.content },
-          ],
-        });
-      })
-      .catch((err) => {
-        this.setState({
-          ...this.state,
-          alert: {
-            show: true,
-            msg: "ChatGPT is facing some trouble, Please Try Again Later",
-          },
-          isLoading: false,
-        });
-        console.log(err);
-      });
+  onSendHandler = (promt, msg, isPromt) => {
+    let sendmsg = [{ role: "user", content: msg }];
+    if (isPromt) {
+      sendmsg = [...sendmsg, { role: "assistant", content: promt }];
+    }
+    this.setState(
+      {
+        ...this.state,
+        msgs: [...this.state.msgs, ...sendmsg],
+        chatBoxValue: "",
+        isLoading: true,
+      },
+      () => {
+        axios
+          .post(
+            "https://api.openai.com/v1/chat/completions",
+            {
+              model: "gpt-3.5-turbo",
+              messages: this.state.msgs,
+              max_tokens: 100,
+            },
+            {
+              headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}` },
+            }
+          )
+          .then((res) => {
+            this.setState({
+              ...this.state,
+              isLoading: false,
+              msgs: [
+                ...this.state.msgs,
+                {
+                  role: "system",
+                  content: res.data.choices[0].message.content,
+                },
+              ],
+            });
+          })
+          .catch((err) => {
+            this.setState({
+              ...this.state,
+              alert: {
+                show: true,
+                msg: "ChatGPT is facing some trouble, Please Try Again Later",
+              },
+              isLoading: false,
+            });
+            console.log(err);
+          });
+      }
+    );
   };
 
   onChangeChatBoxValue = (input) => {
@@ -76,9 +87,9 @@ class Chat extends React.Component {
       chatBoxValue: input,
     });
   };
-  createMessage = (type, msg) => {
+  createMessage = (role, msg) => {
     let msgStyle = styles.msgBoxBot;
-    if (type == "user") msgStyle = styles.msgBoxUser;
+    if (role == "user") msgStyle = styles.msgBoxUser;
     return (
       <View style={{ ...styles.msgBox, ...msgStyle }}>
         <Text style={styles.msg}>{msg}</Text>
@@ -87,7 +98,9 @@ class Chat extends React.Component {
   };
   render() {
     const promts = [
-      "Ask me 1 MCQ questions, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
+      "Ask me 5 MCQ question, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
+      "Ask me 5 mcq question on the topic specified by me, ask me given questions one bye one",
+      "Need to Ask a Doubt",
     ];
     const ShowAlert = (msg) =>
       Alert.alert("ChatGPT Unavailable", msg, [
@@ -113,24 +126,30 @@ class Chat extends React.Component {
               this.scrollView.scrollToEnd({ animated: false });
             }}
           >
-            {this.state.msgs.map((msg) =>
-              this.createMessage(msg.type, msg.value)
-            )}
+            {this.state.msgs
+              .filter((msg) => msg.role != "assistant")
+              .map((msg) => this.createMessage(msg.role, msg.content))}
           </ScrollView>
         </View>
         <View style={styles.bubbles}>
           <TouchableOpacity
             style={styles.bubbleBtn}
             onPress={() =>
-              this.onSendHandler(promts[0], "Recommend Career Path!")
+              this.onSendHandler(promts[0], "Recommend Career Path!", true)
             }
           >
             <Text style={styles.bubbleTxt}>Recommend Career Path!</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bubbleBtn}>
+          <TouchableOpacity
+            style={styles.bubbleBtn}
+            onPress={() => this.onSendHandler(promts[1], "Quiz Me!", true)}
+          >
             <Text style={styles.bubbleTxt}>Quiz Me!</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bubbleBtn}>
+          <TouchableOpacity
+            style={styles.bubbleBtn}
+            onPress={() => this.onSendHandler(promts[2], "Ask Doubts?", true)}
+          >
             <Text style={styles.bubbleTxt}>Ask Doubts?</Text>
           </TouchableOpacity>
         </View>
@@ -147,7 +166,8 @@ class Chat extends React.Component {
               onPress={() =>
                 this.onSendHandler(
                   this.state.chatBoxValue,
-                  this.state.chatBoxValue
+                  this.state.chatBoxValue,
+                  false
                 )
               }
             >
