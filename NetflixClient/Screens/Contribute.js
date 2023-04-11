@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Dropdown from "../Component/Dropdown";
@@ -104,11 +105,11 @@ class Contribute extends React.Component {
     formData.append("courseCategory", this.state.courseCategory);
     axios
       .put("/course/courses/upload", formData)
-      .then((response) => {
-        console.log(response);
-      })
+      .then((response) => {})
       .catch((error) => {
-        console.log(error);
+        Alert.alert("Something Went Wrong", "Please Try Again!", [
+          { text: "OK", onPress: () => {} },
+        ]);
       })
       .finally(() => {
         this.setState({
@@ -120,6 +121,17 @@ class Contribute extends React.Component {
           isRefreshing: false,
         });
       });
+    Alert.alert("Course Added", "Your New Course Uploaded Successfully!", [
+      { text: "OK", onPress: () => {} },
+    ]);
+    this.setState({
+      courseName: "",
+      courseCategory: "Choose Category",
+      thumbnailInput: null,
+      videoInput: null,
+      isValid: false,
+      isRefreshing: false,
+    });
   };
 
   render() {

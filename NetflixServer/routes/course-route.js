@@ -108,7 +108,7 @@ router.get("/courses", async (req, res) => {
       };
     }
   }
-
+  
   for (const course_i in coursesAvgRating) {
     coursesAvgRating[course_i] = {
       rating_sum: coursesAvgRating[course_i].rating_sum,
@@ -131,8 +131,6 @@ router.get("/courses", async (req, res) => {
   );
 
   topCourses = topCourses.slice(0, 5);
-
-  console.log(topCourses);
 
   const recommendedList = [];
   for (const item of topCourses) {
