@@ -17,8 +17,8 @@ class Dropdown extends Component {
             this.props.onUpdate(itemValue)
           }
         >
-          {this.props.options.map((option) => (
-            <Picker.Item label={option} value={option} />
+          {this.props.options.map((option, index) => (
+            <Picker.Item key={index} label={option} value={option} />
           ))}
         </Picker>
       </View>

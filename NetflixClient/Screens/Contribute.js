@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
+  ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Dropdown from "../Component/Dropdown";
@@ -22,6 +23,7 @@ class Contribute extends React.Component {
       thumbnailInput: null,
       videoInput: null,
       isValid: false,
+      isRefreshing: false,
     };
   }
 
@@ -30,33 +32,45 @@ class Contribute extends React.Component {
   }
 
   courseNameHandler = (input) => {
-    this.setState({
-      ...this.state,
-      courseName: input,
-    }, this.validate);
+    this.setState(
+      {
+        ...this.state,
+        courseName: input,
+      },
+      this.validate
+    );
   };
 
   courseCategoryHandler = (input) => {
-    this.setState({
-      ...this.state,
-      courseCategory: input,
-    }, this.validate);
+    this.setState(
+      {
+        ...this.state,
+        courseCategory: input,
+      },
+      this.validate
+    );
   };
 
   thumbnailHandler = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: "image/*" });
-    this.setState({
-      ...this.state,
-      thumbnailInput: result,
-    }, this.validate);
+    this.setState(
+      {
+        ...this.state,
+        thumbnailInput: result,
+      },
+      this.validate
+    );
   };
 
   videoHandler = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: "video/*" });
-    this.setState({
-      ...this.state,
-      videoInput: result,
-    }, this.validate);
+    this.setState(
+      {
+        ...this.state,
+        videoInput: result,
+      },
+      this.validate
+    );
   };
 
   validate = () => {
@@ -79,6 +93,10 @@ class Contribute extends React.Component {
   };
 
   onUploadHandler = async () => {
+    this.setState({
+      ...this.state,
+      isRefreshing: true,
+    });
     const formData = new FormData();
     formData.append("thumbnail", this.state.thumbnailInput);
     formData.append("video", this.state.videoInput);
@@ -91,6 +109,16 @@ class Contribute extends React.Component {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        this.setState({
+          courseName: "",
+          courseCategory: "Choose Category",
+          thumbnailInput: null,
+          videoInput: null,
+          isValid: false,
+          isRefreshing: false,
+        });
       });
   };
 
@@ -155,6 +183,13 @@ class Contribute extends React.Component {
               </Text>
             )}
           </TouchableOpacity>
+          {this.state.loading && (
+            <ActivityIndicator
+              style={styles.loader}
+              size="large"
+              color="#8758FF"
+            />
+          )}
           <TouchableOpacity
             style={this.state.isValid ? styles.button : styles.disbledbutton}
             onPress={() => {
@@ -172,6 +207,14 @@ class Contribute extends React.Component {
 
 const styles = StyleSheet.create({
   container: { flex: 1, margin: 18 },
+  loader: {
+    zIndex: 10,
+    elevation: 10,
+    alignItems: "center",
+    position: "absolute",
+    top: Dimensions.get("window").height / 2.5,
+    left: Dimensions.get("window").width / 2.25,
+  },
   section: {
     borderWidth: 2,
     borderColor: "white",

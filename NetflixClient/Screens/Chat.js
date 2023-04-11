@@ -87,11 +87,11 @@ class Chat extends React.Component {
       chatBoxValue: input,
     });
   };
-  createMessage = (role, msg) => {
+  createMessage = (role, msg, id) => {
     let msgStyle = styles.msgBoxBot;
     if (role == "user") msgStyle = styles.msgBoxUser;
     return (
-      <View style={{ ...styles.msgBox, ...msgStyle }}>
+      <View key={id} style={{ ...styles.msgBox, ...msgStyle }}>
         <Text style={styles.msg}>{msg}</Text>
       </View>
     );
@@ -128,7 +128,7 @@ class Chat extends React.Component {
           >
             {this.state.msgs
               .filter((msg) => msg.role != "assistant")
-              .map((msg) => this.createMessage(msg.role, msg.content))}
+              .map((msg, index) => this.createMessage(msg.role, msg.content, index))}
           </ScrollView>
         </View>
         <View style={styles.bubbles}>

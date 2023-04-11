@@ -15,7 +15,6 @@ import VideoPlayer from "../Component/VideoPlayer";
 import AppState from "../Context/AppState";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import axios from "../axios/axios";
-import config from "../env";
 import { AirbnbRating } from "react-native-ratings";
 
 class Home extends React.Component {

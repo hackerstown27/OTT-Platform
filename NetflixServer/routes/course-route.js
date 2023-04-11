@@ -5,6 +5,7 @@ const Course = require("../schema/course-schema");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
+const User = require("../schema/user-schema");
 
 aws.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -87,6 +88,58 @@ router.get("/courses", async (req, res) => {
     watchList.push(watchedCourse);
   }
 
+  let topCourses = [];
+  const coursesAvgRating = {};
+
+  const users = await User.find();
+  for (const user_i of users) {
+    for (const course_i in user_i.historyList.toJSON()) {
+      if (coursesAvgRating[course_i] === undefined) {
+        coursesAvgRating[course_i] = {
+          rating_sum: 0,
+          rating_count: 0,
+        };
+      }
+      coursesAvgRating[course_i] = {
+        rating_sum:
+          coursesAvgRating[course_i].rating_sum +
+          user_i.historyList.toJSON()[course_i],
+        rating_count: coursesAvgRating[course_i].rating_count + 1,
+      };
+    }
+  }
+
+  for (const course_i in coursesAvgRating) {
+    coursesAvgRating[course_i] = {
+      rating_sum: coursesAvgRating[course_i].rating_sum,
+      rating_count: coursesAvgRating[course_i].rating_count,
+      rating_avg:
+        coursesAvgRating[course_i].rating_sum /
+        coursesAvgRating[course_i].rating_count,
+    };
+  }
+  for (const item in coursesAvgRating) {
+    topCourses.push({ courseId: item, detail: coursesAvgRating[item] });
+  }
+
+  topCourses = topCourses.sort((c1, c2) =>
+    c1.detail.rating_avg < c2.detail.rating_avg
+      ? 1
+      : c1.detail.rating_avg > c2.detail.rating_avg
+      ? -1
+      : 0
+  );
+
+  topCourses = topCourses.slice(0, 5);
+
+  console.log(topCourses);
+
+  const recommendedList = [];
+  for (const item of topCourses) {
+    const topCourse = await Course.findById(item.courseId).lean();
+    recommendedList.push(topCourse);
+  }
+
   const wishList = [];
   for (const item in user.wishList.toJSON()) {
     const wishedCourse = await Course.findById(item).lean();
@@ -96,6 +149,7 @@ router.get("/courses", async (req, res) => {
 
   output["Continue Watching"] = watchList;
   output["Your WishList"] = wishList;
+  output["Recommended"] = recommendedList;
   const tags = await Course.find().select({ tag: 1 }).distinct("tag");
   for (let tag of tags) {
     output[tag] = await Course.find({ tag: tag });
