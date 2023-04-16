@@ -98,8 +98,8 @@ class Chat extends React.Component {
   };
   render() {
     const promts = [
-      "Ask me 5 MCQ question, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
-      "Ask me 5 mcq question on the topic specified by me, ask me given questions one bye one",
+      "Ask me 3 MCQ question, to check my interest in technology fields such as AI, Cyber Security, Ethical Hacking, Cloud Computing, Big Data, Deep Learning, Power BI, Data Analytics, and Tableau. Also include some technical questions related to these fields. & tell me in which technology should i follow my career in based on the answers given, ask me given questions one bye one",
+      "Ask me 3 mcq question on the topic specified by me, ask me given questions one bye one",
       "Need to Ask a Doubt",
     ];
     const ShowAlert = (msg) =>

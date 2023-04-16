@@ -10,6 +10,7 @@ import Home from "./Screens/Home";
 import Setting from "./Screens/Setting";
 import Chat from "./Screens/Chat";
 import Contribute from "./Screens/Contribute";
+import Session from "./Screens/Session";
 import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createStackNavigator();
@@ -67,6 +68,8 @@ class App extends React.Component {
               } else if (route.name === "Settings") {
                 iconName = focused ? "settings" : "settings-outline";
               } else if (route.name === "Contribute") {
+                iconName = focused ? "cloud-upload" : "cloud-upload-outline";
+              } else if (route.name === "Session") {
                 iconName = focused ? "videocam" : "videocam-outline";
               }
 
@@ -79,6 +82,7 @@ class App extends React.Component {
         >
           <Tab.Screen name="Home" component={Home} />
           <Tab.Screen name="Chat" component={Chat} />
+          <Tab.Screen name="Session" component={Session} />
           <Tab.Screen name="Contribute" component={Contribute} />
           <Tab.Screen name="Settings" component={Setting} />
         </Tab.Navigator>

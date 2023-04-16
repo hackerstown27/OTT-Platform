@@ -99,15 +99,19 @@ class Home extends React.Component {
   };
 
   refreshHandler = () => {
-    this.setState({
-      ...this.state,
-      isRefreshing: true,
-    });
-    this.initialization();
-    this.setState({
-      ...this.state,
-      isRefreshing: false,
-    });
+    this.setState(
+      {
+        ...this.state,
+        isRefreshing: true,
+      },
+      () => {
+        this.initialization();
+        this.setState({
+          ...this.state,
+          isRefreshing: false,
+        });
+      }
+    );
   };
 
   render() {
@@ -116,13 +120,17 @@ class Home extends React.Component {
         <TouchableOpacity
           style={styles.card}
           onPress={() => {
-            this.setState({
-              ...this.state,
-              videoSrc: item.videoSrc,
-              currCourseId: item._id,
-              showRating: false,
-            });
-            this.addToWatchHandler(item._id);
+            this.setState(
+              {
+                ...this.state,
+                videoSrc: item.videoSrc,
+                currCourseId: item._id,
+                showRating: false,
+              },
+              () => {
+                this.addToWatchHandler(item._id);
+              }
+            );
           }}
         >
           {item.watching && (
@@ -196,7 +204,6 @@ class Home extends React.Component {
             }}
             onRemoveFromWatch={() => {
               this.removeFromWatchHandler(this.state.currCourseId);
-
               this.setState({
                 ...this.state,
                 showRating: true,

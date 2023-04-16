@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
   picker: {
     backgroundColor: "#BACDDB",
     borderRadius: 5,
-    height: 50,
+    height: 55,
   },
   pickerItem: {
-    height: 50,
+    height: 55,
     color: "white",
   },
   container: {
