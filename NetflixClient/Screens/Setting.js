@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ScrollView
 } from "react-native";
 import AppState from "../Context/AppState";
 import axios from "../axios/axios";
@@ -153,6 +154,7 @@ class Setting extends React.Component {
       ]);
 
     return (
+      <ScrollView>
       <View style={styles.container}>
         <Notification />
         {this.state.alert.show &&
@@ -273,6 +275,7 @@ class Setting extends React.Component {
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     );
   }
 }

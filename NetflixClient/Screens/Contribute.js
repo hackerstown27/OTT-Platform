@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Alert,
+  ScrollView,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Dropdown from "../Component/Dropdown";
@@ -136,83 +137,87 @@ class Contribute extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.section}>
-          <Text style={styles.heading}>Add Course</Text>
-          <Text style={styles.label}>Upload Course Content To Contribute</Text>
-          <Dropdown
-            options={[
-              "Choose Category",
-              "CS Subject",
-              "Coding",
-              "Language",
-              "Skill",
-            ]}
-            onUpdate={this.courseCategoryHandler}
-            currentValue={this.state.courseCategory}
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={this.courseNameHandler}
-            value={this.state.courseName}
-            placeholder="Course Name"
-          />
-          <TouchableOpacity
-            style={styles.uploadbutton}
-            onPress={() => {
-              this.thumbnailHandler();
-            }}
-          >
-            <EvilIcons
-              style={styles.uploadIcon}
-              name="image"
-              size={60}
-              color="white"
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.section}>
+            <Text style={styles.heading}>Add Course</Text>
+            <Text style={styles.label}>
+              Upload Course Content To Contribute
+            </Text>
+            <Dropdown
+              options={[
+                "Choose Category",
+                "CS Subject",
+                "Coding",
+                "Language",
+                "Skill",
+              ]}
+              onUpdate={this.courseCategoryHandler}
+              currentValue={this.state.courseCategory}
             />
-            <Text style={styles.uploadbtnText}>Choose Thumbnail</Text>
-            {this.state.thumbnailInput != null && (
-              <Text style={styles.fileTag}>
-                File: {this.state.thumbnailInput.name}{" "}
-              </Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={this.courseNameHandler}
+              value={this.state.courseName}
+              placeholder="Course Name"
+            />
+            <TouchableOpacity
+              style={styles.uploadbutton}
+              onPress={() => {
+                this.thumbnailHandler();
+              }}
+            >
+              <EvilIcons
+                style={styles.uploadIcon}
+                name="image"
+                size={60}
+                color="white"
+              />
+              <Text style={styles.uploadbtnText}>Choose Thumbnail</Text>
+              {this.state.thumbnailInput != null && (
+                <Text style={styles.fileTag}>
+                  File: {this.state.thumbnailInput.name}{" "}
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.uploadbutton}
+              onPress={() => {
+                this.videoHandler();
+              }}
+            >
+              <MaterialCommunityIcons
+                style={styles.uploadIcon}
+                name="file-video"
+                size={60}
+                color="white"
+              />
+              <Text style={styles.uploadbtnText}>Choose Video File</Text>
+              {this.state.videoInput != null && (
+                <Text style={styles.fileTag}>
+                  File: {this.state.videoInput.name}{" "}
+                </Text>
+              )}
+            </TouchableOpacity>
+            {this.state.loading && (
+              <ActivityIndicator
+                style={styles.loader}
+                size="large"
+                color="#8758FF"
+              />
             )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.uploadbutton}
-            onPress={() => {
-              this.videoHandler();
-            }}
-          >
-            <MaterialCommunityIcons
-              style={styles.uploadIcon}
-              name="file-video"
-              size={60}
-              color="white"
-            />
-            <Text style={styles.uploadbtnText}>Choose Video File</Text>
-            {this.state.videoInput != null && (
-              <Text style={styles.fileTag}>
-                File: {this.state.videoInput.name}{" "}
-              </Text>
-            )}
-          </TouchableOpacity>
-          {this.state.loading && (
-            <ActivityIndicator
-              style={styles.loader}
-              size="large"
-              color="#8758FF"
-            />
-          )}
-          <TouchableOpacity
-            style={this.state.isValid ? styles.button : styles.disbledbutton}
-            onPress={() => {
-              this.onUploadHandler();
-            }}
-            disabled={!this.state.isValid}
-          >
-            <Text style={styles.btnText}>Upload Course</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={this.state.isValid ? styles.button : styles.disbledbutton}
+              onPress={() => {
+                this.onUploadHandler();
+              }}
+              disabled={!this.state.isValid}
+            >
+              <Text style={styles.btnText}>Upload Course</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }

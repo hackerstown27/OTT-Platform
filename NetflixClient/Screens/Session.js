@@ -117,7 +117,7 @@ class Session extends React.Component {
                 <Image
                   style={styles.thumb}
                   source={{
-                    uri: "http://localhost:3000/courseThumbnails/session.jpg",
+                    uri: "https://streamingo-course.s3.ap-south-1.amazonaws.com/thumbnails/session.jpg",
                   }}
                 />
                 <Text style={styles.sessionHeading}>{item.topic}</Text>

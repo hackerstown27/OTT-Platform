@@ -105,11 +105,19 @@ class Home extends React.Component {
         isRefreshing: true,
       },
       () => {
-        this.initialization();
-        this.setState({
-          ...this.state,
-          isRefreshing: false,
-        });
+        axios
+          .get("/course/courses")
+          .then((res) => {
+            this.setState({
+              ...this.state,
+              courses: res.data,
+              loading: false,
+              isRefreshing: false,
+            });
+          })
+          .catch((err) => {
+            this.showAlert();
+          });
       }
     );
   };
